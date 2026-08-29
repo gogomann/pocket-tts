@@ -45,12 +45,12 @@ coverage.json
 venv/
 ENV/
 
+# Voices directory (keep locally, do not upload online)
+voices/
+
 # Output produced files (keep directory via .gitkeep)
 fertige_files/*.wav
 fertige_files/*.txt
-
-# Voice safetensors caches (auto-generated from audio files on first run, avoids GitHub 50MB+ limit)
-voices/*.safetensors
 
 # Training / local data
 /data*/
