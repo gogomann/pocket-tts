@@ -1,0 +1,24 @@
+{
+  "valerie": {
+    "name": "valerie",
+    "language": "de"
+  },
+  "franziska_pigulla": {
+    "name": "franziska_pigulla",
+    "language": "de"
+  },
+  "henning_may": {
+    "name": "henning_may",
+    "language": "de"
+  },
+  "ben_affleck": {
+    "name": "ben_affleck",
+    "language": "de",
+    "filename": "ben_affleck.wav"
+  },
+  "dainer_skully": {
+    "name": "dainer_skully",
+    "language": "de",
+    "filename": "dainer_skully.wav"
+  }
+}

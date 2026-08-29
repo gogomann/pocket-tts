@@ -1,14 +1,27 @@
 services:
   pocket-tts:
     build: .
+    container_name: pocket-tts
     ports:
-      - "8000:8000"
+      - "${PORT:-8000}:8000"
+    environment:
+      - VOICES_DIR=/app/voices
+      - OUTPUT_DIR=/app/fertige_files
+      - DEFAULT_LANGUAGE=${DEFAULT_LANGUAGE:-german_24l}
+      - HOST=0.0.0.0
+      - PORT=8000
+      - HF_TOKEN=${HF_TOKEN:-}
     volumes:
+      # Persistent custom voices storage
+      - ./voices:/app/voices
+      # Archive of produced audio files and generation logs
+      - ./fertige_files:/app/fertige_files
+      # Persistent cache for downloaded Hugging Face model weights
+      - ${HF_CACHE_DIR:-huggingface_cache}:/root/.cache/huggingface
       - pocket_tts_cache:/root/.cache/pocket_tts
-      - hf_cache:/root/.cache/huggingface
-    command: ["serve", "--host", "0.0.0.0"]
+    command: ["serve", "--host", "0.0.0.0", "--port", "8000", "--voices-dir", "/app/voices"]
     restart: unless-stopped
 
 volumes:
   pocket_tts_cache:
-  hf_cache:
+  huggingface_cache:

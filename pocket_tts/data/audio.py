@@ -41,22 +41,47 @@ def audio_read(filepath: str | Path) -> tuple[torch.Tensor, int]:
     return _audio_read_with_soundfile(filepath)
 
 
+def _audio_read_with_ffmpeg(filepath: Path) -> tuple[torch.Tensor, int]:
+    """Fallback audio decoder using ffmpeg command line for all common formats."""
+    import subprocess
+    cmd = [
+        "ffmpeg",
+        "-nostdin",
+        "-threads", "0",
+        "-i", str(filepath),
+        "-f", "f32le",
+        "-ac", "1",
+        "-ar", "24000",
+        "-"
+    ]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, check=True)
+        samples = np.frombuffer(proc.stdout, dtype=np.float32)
+        if len(samples) == 0:
+            raise ValueError("FFmpeg produced 0 audio samples")
+        return torch.from_numpy(samples.copy()).unsqueeze(0), 24000
+    except Exception as e:
+        raise RuntimeError(f"FFmpeg decoding failed: {e}") from e
+
+
 def _audio_read_with_soundfile(filepath: Path) -> tuple[torch.Tensor, int]:
-    # For non-WAV and non-16-bit WAV formats, use soundfile (optional dependency)
+    """For non-WAV, MP3, and non-16-bit WAV formats, use soundfile or ffmpeg."""
     try:
         import soundfile as sf
-    except ImportError as e:
-        raise ImportError(
-            "soundfile is required to read non-WAV or non-16-bit WAV audio files. "
-            "Install with: `pip install soundfile` or `uvx --with soundfile`"
-        ) from e
-
-    data, sample_rate = sf.read(str(filepath), dtype="float32")
-    if data.ndim == 1:
-        wav = torch.from_numpy(data).unsqueeze(0)
-    else:
-        wav = torch.from_numpy(data.mean(axis=1)).unsqueeze(0)
-    return wav, sample_rate
+        data, sample_rate = sf.read(str(filepath), dtype="float32")
+        if data.ndim == 1:
+            wav = torch.from_numpy(data).unsqueeze(0)
+        else:
+            wav = torch.from_numpy(data.mean(axis=1)).unsqueeze(0)
+        return wav, sample_rate
+    except Exception as e_sf:
+        try:
+            return _audio_read_with_ffmpeg(filepath)
+        except Exception:
+            raise ImportError(
+                f"Failed to read audio file '{filepath}'. Please ensure 'soundfile' or 'ffmpeg' is installed. "
+                f"Details: {e_sf}"
+            ) from e_sf
 
 
 class StreamingWAVWriter:

@@ -8,6 +8,7 @@ __pycache__
 
 # macOS dir files
 .DS_Store
+Thumbs.db
 
 # Distribution / packaging
 .Python
@@ -35,9 +36,6 @@ wheels/
 .coverage
 coverage.json
 
-# docs
-/api_docs
-
 # dotenv
 .env
 .envrc
@@ -47,50 +45,15 @@ coverage.json
 venv/
 ENV/
 
-# egs with manifest files
-egs/*
-!egs/example
-# local datasets
-dataset/*
-!dataset/example
+# Output produced files (keep directory via .gitkeep)
+fertige_files/*.wav
+fertige_files/*.txt
 
-# personal notebooks & scripts
-*/local_scripts
-*/notes
-.vscode/
-/notebooks
-/local_scripts
-/notes
+# Voice safetensors caches (auto-generated from audio files on first run, avoids GitHub 50MB+ limit)
+voices/*.safetensors
 
-# cython output
-/audiocraft/metrics/abx/*.c
-
-# rust-analyzer
-Cargo.toml
-Cargo.lock
-target/
-
-# nfs files
-.nfs*
-.coverage.*
-
-/weights
-test_en_audio_4000.model
-profile_output*
-*.safetensors
-*.wav
-*.model
-*.pt
-
-# Agents files, use a symlink to AGENTS.md instead. 
-CLAUDE.md
-QWEN.md
-.claude/
-voices
-
-italk.yaml
-
-# training
-.venv-train/
-data*/
+# Training / local data
+/data*/
+training/data*/
 runs/
+*.pt
