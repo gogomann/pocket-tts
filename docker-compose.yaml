@@ -1,6 +1,7 @@
 services:
   pocket-tts:
     build: .
+    image: pocket-tts:latest
     container_name: pocket-tts
     ports:
       - "${PORT:-8000}:8000"

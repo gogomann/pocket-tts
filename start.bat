@@ -16,12 +16,13 @@ if not exist .env (
     )
 )
 
-docker compose up -d --build
+docker image inspect pocket-tts:latest >nul 2>&1
 if errorlevel 1 (
-    echo Notice: Retrying build with docker build...
+    echo Building Docker image pocket-tts:latest...
     docker build -t pocket-tts:latest .
-    docker compose up -d
 )
+
+docker compose up -d --no-build
 
 echo.
 echo ==================================================

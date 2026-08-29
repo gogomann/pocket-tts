@@ -12,13 +12,12 @@ if (!(Test-Path -Path ".env") -and (Test-Path -Path ".env.example")) {
     Write-Host "Created .env from .env.example" -ForegroundColor Green
 }
 
-try {
-    docker compose up -d --build
-} catch {
-    Write-Host "Notice: Retrying build with docker build..." -ForegroundColor Yellow
+if (!(docker image inspect pocket-tts:latest 2>$null)) {
+    Write-Host "Building Docker image pocket-tts:latest..." -ForegroundColor Cyan
     docker build -t pocket-tts:latest .
-    docker compose up -d
 }
+
+docker compose up -d --no-build
 
 Write-Host ""
 Write-Host "==================================================" -ForegroundColor Green

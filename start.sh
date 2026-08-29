@@ -27,12 +27,14 @@ if [ ! -f .env ] && [ -f .env.example ]; then
     cp .env.example .env
 fi
 
-# Build and start containers in background (with resilient fallback)
-if ! docker compose up -d --build 2>/dev/null; then
-    echo "Notice: docker compose build fallback triggered, running docker build..."
+# Build Docker image if not present
+if ! docker image inspect pocket-tts:latest &> /dev/null; then
+    echo "Building Docker image pocket-tts:latest..."
     docker build -t pocket-tts:latest .
-    docker compose up -d
 fi
+
+# Start containers in background
+docker compose up -d --no-build
 
 echo ""
 echo "=================================================="
